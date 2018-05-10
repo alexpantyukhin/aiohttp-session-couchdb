@@ -82,7 +82,7 @@ def couchdb_server(docker, session_id, loop, request):
             server = aiocouchdb.Server("http://{}:{}".format(host, port))
             loop.run_until_complete(server.all_dbs())
             break
-        except aiocouchdb.errors.HttpErrorException as e:
+        except Exception as e:
             time.sleep(delay)
             delay *= 2
     else:
@@ -103,7 +103,7 @@ def couchdb_params(couchdb_server):
 
 
 @pytest.fixture
-def couchdb(loop, couchdb_params):
+def couch_db(loop, couchdb_params):
 
     server = aiocouchdb.Server("http://{}:{}"
                                .format(

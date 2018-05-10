@@ -15,7 +15,7 @@ class CouchDBStorage(AbstractStorage):
                          httponly=httponly,
                          encoder=encoder, decoder=decoder)
 
-        self._collection = db
+        self._db = db
         self._key_factory = key_factory
 
     async def load_session(self, request):
@@ -25,10 +25,8 @@ class CouchDBStorage(AbstractStorage):
         else:
             key = str(cookie)
             stored_key = (self.cookie_name + '_' + key).encode('utf-8')
-            data_row = await self._collection.find_one(
-                filter={'key': stored_key}
-            )
-            if data_row is None:
+            data_row = await self._db.doc(stored_key)
+            if not data_row.exists():
                 return Session(None, data=None,
                                new=True, max_age=self.max_age)
 
@@ -57,13 +55,11 @@ class CouchDBStorage(AbstractStorage):
         max_age = session.max_age
         expire = max_age if max_age is not None else 0
         stored_key = (self.cookie_name + '_' + key).encode('utf-8')
-        await self._collection.update_one(
-                                          {'key': stored_key},
-                                          {"$set":
-                                            {
-                                              'key': stored_key,
-                                              'data': data,
-                                              'expire': expire
-                                            }
-                                          },
-                                          upsert=True)
+        await self._db.update(
+                              {
+                                {
+                                  '_id': stored_key,
+                                  'data': data,
+                                  'expire': expire
+                                }
+                              })

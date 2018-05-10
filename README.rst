@@ -1,11 +1,11 @@
-aiohttp_session_mongo
+aiohttp_session_couchdb
 ===============
 .. image:: https://travis-ci.org/alexpantyukhin/aiohttp-session-mongo.svg?branch=master
     :target: https://travis-ci.org/alexpantyukhin/aiohttp-session-mongo
 .. image:: https://codecov.io/github/alexpantyukhin/aiohttp-session-mongo/coverage.svg?branch=master
     :target: https://codecov.io/github/alexpantyukhin/aiohttp-session-mongo
 
-The library provides mongo sessions store for `aiohttp.web`__.
+The library provides couchdb sessions store for `aiohttp.web`__.
 
 .. _aiohttp_web: https://aiohttp.readthedocs.io/en/latest/web.html
 
@@ -23,7 +23,7 @@ A trivial usage example:
     from cryptography import fernet
     from aiohttp import web
     from aiohttp_session import setup, get_session
-    from aiohttp_session_mongo import MongoStorage
+    from aiohttp_session_couchdb import CouchDBStorage
 
 
     async def handler(request):
@@ -37,7 +37,7 @@ A trivial usage example:
     def make_app():
         app = web.Application()
 
-        setup(app, MongoStorage(mongo_colletion,
+        setup(app, CouchDBStorage(couch_db,
                                 max_age=max_age,
                                 key_factory=lambda: uuid.uuid4().hex)
                                 )
